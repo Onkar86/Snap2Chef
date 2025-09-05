@@ -1,13 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { AnalysisResult, Recipe } from '../types';
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+// Safely access the API key to prevent crashes in environments without `process`
+const API_KEY = typeof process !== 'undefined' && process.env ? process.env.API_KEY : undefined;
 
 const responseSchema = {
     type: Type.OBJECT,
@@ -85,6 +80,11 @@ export const generateAnalysis = async (
   language: string,
   pantryItems: string[]
 ): Promise<AnalysisResult> => {
+  if (!API_KEY) {
+    throw new Error("API_KEY_MISSING: The Google Gemini API key is not configured. Please set the API_KEY environment variable in your deployment environment.");
+  }
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
+
   let prompt = `You are a culinary expert assistant named Snap2Chef. Analyze the food item(s) in this image. Provide a comprehensive analysis in the language with code: ${language}. Respond ONLY with a valid JSON object that adheres to the provided schema. Do not include any text, markdown, or code block syntax outside the JSON object.
 
   The analysis should include:

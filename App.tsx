@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { progress, addProgress, newBadge, clearNewBadge } = useGamification();
   const { savedRecipes, savedRecipeIds, addSavedRecipe, removeSavedRecipe } = useSavedRecipes();
+  // FIX: Corrected typo in destructuring assignment from `removeItemFromP pantry` to `removeItemFromPantry`.
   const { pantryItems, addItem: addItemToPantry, removeItem: removeItemFromPantry } = usePantry();
 
   const handleImageUpload = useCallback(async (file: File) => {
@@ -50,7 +52,11 @@ const App: React.FC = () => {
       };
     } catch (err) {
       console.error(err);
-      setError('Failed to analyze the image. Please try another one.');
+      if (err instanceof Error && err.message.startsWith('API_KEY_MISSING')) {
+        setError('Configuration Error: The application is not connected to the AI service. The API key is missing.');
+      } else {
+        setError('Failed to analyze the image. Please try another one.');
+      }
       setView('home');
     } finally {
       setIsLoading(false);

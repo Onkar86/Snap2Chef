@@ -1,9 +1,8 @@
 {
-  "name": "copy-of-snap2chef",
+  "name": "copy-of-copy-of-snap2chef",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://onkar86.github.io/Snap2Chef/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,17 +10,15 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@google/genai": "^1.17.0",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "@google/genai": "^1.17.0"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "autoprefixer": "^10.4.21",
+    "vite": "^6.2.0",
     "gh-pages": "^6.3.0",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.13",
     "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  }
+    "@types/node": "^22.14.0"
+  },
+  "homepage": "https://Onkar86.github.io/Snap2Chef/"
 }

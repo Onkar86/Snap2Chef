@@ -5,9 +5,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ".", "");
 
   return {
-    base: "/Snap2Chef/", // required for GitHub Pages
+    base: "/Snap2Chef/", // 👈 must match repo name
     define: {
-      // Expose Gemini API key
       "process.env.VITE_GEMINI_API_KEY": JSON.stringify(env.VITE_GEMINI_API_KEY),
     },
     resolve: {
