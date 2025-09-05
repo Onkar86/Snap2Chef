@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { TimerIcon } from '../assets/icons';
+// FIX: Replace missing TimerIcon with Timer from lucide-react
+import { Timer } from 'lucide-react';
 
 interface AROverlayProps {
   recipeName: string;
@@ -40,7 +41,8 @@ const ARVisualCues: React.FC<{ instruction: string }> = ({ instruction }) => {
         const seconds = timer % 60;
         return (
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-6 rounded-2xl flex flex-col items-center gap-2 border border-white/20">
-                <TimerIcon className="w-12 h-12 text-emerald-400" />
+                {/* FIX: Use Timer icon from lucide-react */}
+                <Timer className="w-12 h-12 text-emerald-400" />
                 <p className="text-5xl font-bold tracking-wider">{`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`}</p>
                 <p className="text-sm text-white/80">Time Remaining</p>
             </div>

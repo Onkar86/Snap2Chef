@@ -1,6 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
-import Header from './components/Header';
+import { motion } from 'framer-motion';
+import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ResultsDashboard from './components/ResultsDashboard';
 import CookingMode from './components/CookingMode';
@@ -8,6 +9,8 @@ import Loading from './components/Loading';
 import BadgeToast from './components/BadgeToast';
 import SavedRecipes from './components/SavedRecipes';
 import PantryManager from './components/PantryManager';
+import Footer from './components/Footer';
+import ChatbotSidebar from './components/ChatbotSidebar';
 import { generateAnalysis } from './services/geminiService';
 import type { AnalysisResult, Recipe, Language } from './types';
 import { useGamification } from './hooks/useGamification';
@@ -29,7 +32,6 @@ const App: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { progress, addProgress, newBadge, clearNewBadge } = useGamification();
   const { savedRecipes, savedRecipeIds, addSavedRecipe, removeSavedRecipe } = useSavedRecipes();
-  // FIX: Corrected typo in destructuring assignment from `removeItemFromP pantry` to `removeItemFromPantry`.
   const { pantryItems, addItem: addItemToPantry, removeItem: removeItemFromPantry } = usePantry();
 
   const handleImageUpload = useCallback(async (file: File) => {
@@ -49,6 +51,7 @@ const App: React.FC = () => {
         const result = await generateAnalysis(base64String, file.type, language.code, pantryItems);
         setAnalysisResult(result);
         addProgress('recipeGenerated');
+        setIsLoading(false);
       };
     } catch (err) {
       console.error(err);
@@ -58,7 +61,6 @@ const App: React.FC = () => {
         setError('Failed to analyze the image. Please try another one.');
       }
       setView('home');
-    } finally {
       setIsLoading(false);
     }
   }, [language, addProgress, pantryItems]);
@@ -74,10 +76,6 @@ const App: React.FC = () => {
   };
 
   const handleBackToHome = () => {
-    setView('home');
-  }
-  
-  const handleReset = () => {
     setView('home');
     setAnalysisResult(null);
     setError(null);
@@ -102,7 +100,7 @@ const App: React.FC = () => {
     
     switch (view) {
       case 'home':
-        return <Hero onImageUpload={handleImageUpload} error={error} savedRecipesCount={savedRecipes.length} onShowSaved={() => setView('saved')} />;
+        return <Hero onImageUpload={handleImageUpload} error={error} />;
       case 'dashboard':
         return analysisResult ? (
           <ResultsDashboard 
@@ -124,7 +122,6 @@ const App: React.FC = () => {
             recipes={savedRecipes}
             onStartCooking={handleStartCooking}
             onRemove={removeSavedRecipe}
-            onBack={handleBackToHome}
           />
         );
        case 'pantry':
@@ -133,28 +130,35 @@ const App: React.FC = () => {
             pantryItems={pantryItems}
             onAddItem={addItemToPantry}
             onRemoveItem={removeItemFromPantry}
-            onBack={handleBackToHome}
           />
         );
       default:
-        return <Hero onImageUpload={handleImageUpload} error={error} savedRecipesCount={savedRecipes.length} onShowSaved={() => setView('saved')} />;
+        return <Hero onImageUpload={handleImageUpload} error={error} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-      <Header 
-        language={language} 
-        setLanguage={setLanguage} 
-        progress={progress} 
-        onLogoClick={handleReset}
+    <div className="min-h-screen animated-gradient animate-gradient text-slate-800 dark:text-slate-200">
+      <Navbar
         onNavigate={navigateTo}
         theme={theme}
         toggleTheme={toggleTheme}
+        language={language}
+        setLanguage={setLanguage}
       />
-      <main className="container mx-auto px-4 py-8">
-        {renderContent()}
+      <main className="container mx-auto px-4 py-8 min-h-[calc(100vh-140px)]">
+         <motion.div
+            key={view}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {renderContent()}
+          </motion.div>
       </main>
+      <Footer />
+      <ChatbotSidebar />
       {newBadge && (
         <BadgeToast badge={newBadge} onDismiss={clearNewBadge} />
       )}

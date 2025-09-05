@@ -6,6 +6,7 @@ export interface Language {
 export interface Ingredient {
   name: string;
   quantity: string;
+  hasInPantry: boolean;
 }
 
 export interface Recipe {
@@ -17,6 +18,8 @@ export interface Recipe {
   cookingTime: string; // e.g., "25-30 minutes"
   difficulty: 'Easy' | 'Medium' | 'Hard';
   dietaryTags: string[]; // e.g., ["Vegan", "Gluten-Free"]
+  pantryMatchCount: number;
+  missingIngredients: string[];
 }
 
 export interface NutritionInfo {
