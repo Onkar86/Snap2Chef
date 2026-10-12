@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import UploadBox from './UploadBox';
-import { Leaf, Zap, BrainCircuit } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface HeroProps {
   onImageUpload: (file: File) => void;
+  onDemoClick?: () => void;
   error: string | null;
 }
 
@@ -30,7 +31,7 @@ const TrendingPill: React.FC<{ name: string; emoji: string; delay: number }> = (
     </motion.div>
 );
 
-const Hero: React.FC<HeroProps> = ({ onImageUpload, error }) => {
+const Hero: React.FC<HeroProps> = ({ onImageUpload, onDemoClick, error }) => {
   return (
     <div className="text-center py-12 md:py-16">
       
@@ -64,11 +65,28 @@ const Hero: React.FC<HeroProps> = ({ onImageUpload, error }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="max-w-2xl mx-auto mb-12"
+        className="max-w-2xl mx-auto mb-6"
       >
         <UploadBox onImageUpload={onImageUpload} />
         {error && <p className="text-red-500 mt-4">{error}</p>}
       </motion.div>
+
+      {onDemoClick && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.35 }}
+          className="mb-12"
+        >
+          <button
+            onClick={onDemoClick}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium px-6 py-3 rounded-xl shadow-md transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <Sparkles className="w-5 h-5" />
+            <span>Try Sample Recipe (No API Key Required)</span>
+          </button>
+        </motion.div>
+      )}
 
       <div className="max-w-4xl mx-auto">
         <p className="font-semibold text-slate-600 dark:text-slate-400 mb-4">Trending Ingredients</p>

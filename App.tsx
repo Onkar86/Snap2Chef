@@ -43,27 +43,29 @@ const App: React.FC = () => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = async () => {
-        const base64String = (reader.result as string).split(',')[1];
-        if (!base64String) {
-          throw new Error("Failed to read image file.");
+        try {
+          const base64String = (reader.result as string)?.split(',')[1] || '';
+          const result = await generateAnalysis(base64String, file.type || 'image/jpeg', language.code, pantryItems);
+          setAnalysisResult(result);
+          addProgress('recipeGenerated');
+        } catch (err) {
+          console.error('Image analysis error:', err);
+          setError('Could not analyze the photo. Please try a clearer food photo or use the sample recipe.');
+        } finally {
+          setIsLoading(false);
         }
-        
-        const result = await generateAnalysis(base64String, file.type, language.code, pantryItems);
-        setAnalysisResult(result);
-        addProgress('recipeGenerated');
-        setIsLoading(false);
       };
     } catch (err) {
       console.error(err);
-      if (err instanceof Error && err.message.startsWith('API_KEY_MISSING')) {
-        setError('Configuration Error: The application is not connected to the AI service. The API key is missing.');
-      } else {
-        setError('Failed to analyze the image. Please try another one.');
-      }
-      setView('home');
+      setError('Failed to process image.');
       setIsLoading(false);
     }
   }, [language, addProgress, pantryItems]);
+
+  const handleDemoClick = useCallback(() => {
+    const dummyFile = new File(["sample"], "sample_ingredients.jpg", { type: "image/jpeg" });
+    handleImageUpload(dummyFile);
+  }, [handleImageUpload]);
 
   const handleStartCooking = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
@@ -100,7 +102,7 @@ const App: React.FC = () => {
     
     switch (view) {
       case 'home':
-        return <Hero onImageUpload={handleImageUpload} error={error} />;
+        return <Hero onImageUpload={handleImageUpload} onDemoClick={handleDemoClick} error={error} />;
       case 'dashboard':
         return analysisResult ? (
           <ResultsDashboard 
@@ -133,7 +135,7 @@ const App: React.FC = () => {
           />
         );
       default:
-        return <Hero onImageUpload={handleImageUpload} error={error} />;
+        return <Hero onImageUpload={handleImageUpload} onDemoClick={handleDemoClick} error={error} />;
     }
   };
 
